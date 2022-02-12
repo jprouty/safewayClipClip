@@ -36,3 +36,7 @@ def define_common_args(parser):
         action='store_true',
         default=False,
         help='Whether to execute chromedriver with no visible window.')
+
+    parser.add_argument(
+        '-V', '--version', action='store_true',
+        help='Shows the app version and quits.')

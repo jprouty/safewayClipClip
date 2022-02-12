@@ -54,9 +54,9 @@ def on_critical(msg):
 
 
 def maybe_prompt_for_safeway_credentials(args):
-    if not args.safeway_email and not args.mint_safeway_will_login:
+    if not args.safeway_email and not args.safeway_user_will_login:
         args.safeway_email = input('Safeway email: ')
-    if not args.safeway_password and not args.mint_user_will_login:
+    if not args.safeway_password and not args.safeway_user_will_login:
         args.safeway_password = getpass.getpass('Safeway password: ')
 
 
