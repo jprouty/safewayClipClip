@@ -11,13 +11,9 @@ def define_common_args(parser):
     """Parseargs shared between both CLI & GUI programs."""
     # Amazon creds:
     parser.add_argument(
-        '--safeway_email', default=None,
-        help=('Safeway e-mail. If not provided, you will be '
-              'prompted for it.'))
-    parser.add_argument(
-        '--safeway_password', default=None,
-        help=('Safeway password. If not provided, you will be '
-              'prompted for it.'))
+        '--safeway_username', default=None,
+        help=('Safeway username, either an e-mail or phone. If not provided, '
+              'you will be prompted for it.'))
     parser.add_argument(
         '--safeway_user_will_login',
         action='store_true',

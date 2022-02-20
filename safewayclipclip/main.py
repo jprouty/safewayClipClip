@@ -24,7 +24,7 @@ from safewayclipclip.webdriver import get_webdriver
 
 logger = logging.getLogger(__name__)
 
-NEVER_SAVE_MSG = 'Email & password are *never* saved.'
+NEVER_SAVE_MSG = 'Username is *never* saved.'
 
 
 class ClipClipGui:
@@ -56,12 +56,8 @@ class ClipClipGui:
         safeway_layout = QFormLayout()
 
         safeway_layout.addRow(
-            'Email:',
-            self.create_line_edit('safeway_email', tool_tip=NEVER_SAVE_MSG))
-        safeway_layout.addRow(
-            'Password:',
-            self.create_line_edit(
-                'safeway_password', tool_tip=NEVER_SAVE_MSG, password=True))
+            'Username (email or phone#):',
+            self.create_line_edit('safeway_username', tool_tip=NEVER_SAVE_MSG))
         safeway_layout.addRow(
             'I will login myself',
             self.create_checkbox('safeway_user_will_login'))

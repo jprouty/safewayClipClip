@@ -1,9 +1,6 @@
 PyQt5
-outdated
-oathtool
 progress
-range-key-dict
+psutil
 requests
-readchar
 selenium
 selenium-requests
