@@ -84,7 +84,8 @@ def main():
         logger.info('Clicking load more!')
         user_click(load_mores[0])
         time.sleep(2)
-    logger.info('All done!')
+    logger.info('All done! Sleeping for 5m before exiting to allow for review')
+    time.sleep(60 * 5)
 
 
 def user_click(elem):
