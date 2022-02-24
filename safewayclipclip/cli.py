@@ -67,13 +67,12 @@ def main():
             webdriver, 'grid-coupon-btn')
         if not coupons_clip_clip:
             logger.error('Cannot find coupons')
-            break
-
-        for c in coupons_clip_clip:
-            try:
-                user_click(c)
-            except ElementClickInterceptedException:
-                logger.exception('Click interception error; continuing')
+        else:
+            for c in coupons_clip_clip:
+                try:
+                    user_click(c)
+                except ElementClickInterceptedException:
+                    logger.exception('Click interception error; continuing')
 
         load_mores = get_elements_by_class_name(webdriver, 'load-more')
         if not load_mores or not is_visible(load_mores[0]):
