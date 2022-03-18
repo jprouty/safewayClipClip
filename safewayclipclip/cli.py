@@ -108,11 +108,13 @@ def login(webdriver, args):
     webdriver.get(SAFEWAY_HOME)
 
     menu_buttons = get_elements_by_class_name(
-        webdriver, 'menu-nav__profile-button-sign-in-up')
+        webdriver, 'menu-nav__profile-button')
     if not menu_buttons:
         logger.error('Cannot find menu element')
         return False
     menu_button = menu_buttons[0]
+    from pprint import pprint
+    pprint(menu_button)
     if menu_button.text.strip().lower() == 'account':
         logger.info('Login menu button indicates user is already logged in')
         return True
