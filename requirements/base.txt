@@ -3,4 +3,5 @@ progress
 psutil
 requests
 selenium
-selenium-requests
+selenium_stealth
+undetected_chromedriver
