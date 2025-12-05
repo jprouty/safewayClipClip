@@ -4,4 +4,5 @@ psutil
 requests
 selenium
 selenium_stealth
+setuptools
 undetected_chromedriver

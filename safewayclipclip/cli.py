@@ -17,6 +17,8 @@ from selenium.common.exceptions import (
     StaleElementReferenceException,
 )
 from selenium.webdriver import ActionChains
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 
 from safewayclipclip import VERSION
 from safewayclipclip.args import define_common_args, BASE_PATH
@@ -36,7 +38,15 @@ logger = logging.getLogger(__name__)
 
 
 SAFEWAY_HOME = "https://www.safeway.com"
-FOR_U = "{}/justforu/coupons-deals.html".format(SAFEWAY_HOME)
+# FOR_U = "{}/justforu/coupons-deals.html".format(SAFEWAY_HOME)
+LOGIN_THEN_FOR_U = "{}/account/sign-in.html?goto=/foru/coupons-deals.html".format(
+    SAFEWAY_HOME
+)
+COUPON_URL = "{}/loyalty/coupons-deals".format(SAFEWAY_HOME)
+
+COUPON_BUTTON_XPATH = (
+    '//button[contains(text(), "Activate") or contains(text(), "Clip Coupon")]'
+)
 
 
 def main():
@@ -72,7 +82,10 @@ def main():
 
     atexit.register(close_webdriver)
 
-    webdriver.get(FOR_U)
+    webdriver.get(LOGIN_THEN_FOR_U)
+    # Wait - there is sometimes a redirect here.
+    time.sleep(2)
+    logger.info("At Safeway For U coupons page: {}".format(webdriver.current_url))
     if not login_if_needed(webdriver, args):
         logger.error("Cannot login - exiting")
         time.sleep(60)
@@ -81,9 +94,7 @@ def main():
     # Accept cookies bottom
 
     # while True:
-    coupons_clip_clip = get_elements_by_xpath(
-        webdriver, '//button[contains(text(), "Clip Coupon")]'
-    )
+    coupons_clip_clip = get_elements_by_xpath(webdriver, COUPON_BUTTON_XPATH)
     if not coupons_clip_clip:
         logger.error("Cannot find coupons")
         time.sleep(60)
@@ -99,6 +110,7 @@ def main():
     while coupons_clip_clip:
         try:
             user_click(webdriver, coupons_clip_clip[0])
+            logger.info("Clipped a coupon!")
         except ElementClickInterceptedException:
             logger.exception("Click interception error; continuing")
         except StaleElementReferenceException:
@@ -113,10 +125,9 @@ def main():
         )
         if is_visible(close_modal_button):
             user_click(webdriver, close_modal_button)
+            logger.info("Closed modal dialog")
 
-        coupons_clip_clip = get_elements_by_xpath(
-            webdriver, '//button[contains(text(), "Clip Coupon")]'
-        )
+        coupons_clip_clip = get_elements_by_xpath(webdriver, COUPON_BUTTON_XPATH)
 
         # No need to load more - clipped ones disappear and new ones come in.
         # load_mores = get_elements_by_class_name(webdriver, "load-more")
@@ -148,12 +159,23 @@ def on_critical(msg):
     exit(1)
 
 
+PROFILE_NAME_XPATH = "//a[contains(concat(' ',normalize-space(@class),' '),' menu-nav__profile-button ')]/span[1]"
+
+
 def login_if_needed(webdriver, args):
     # Already logged in.
-    if get_elements_by_class_name(webdriver, "menu-nav__profile-button"):
+    profile_name_element = get_element_by_xpath(webdriver, PROFILE_NAME_XPATH)
+    if (
+        is_visible(profile_name_element)
+        and profile_name_element.text.strip() != "Sign in"
+    ):
+        logger.error("Already logged in")
         return True
 
     maybe_prompt_for_safeway_credentials(args)
+
+    if webdriver.current_url != LOGIN_THEN_FOR_U:
+        webdriver.get(LOGIN_THEN_FOR_U)
 
     username_input = get_element_by_id(webdriver, "enterUsername")
     if not username_input:
@@ -185,8 +207,17 @@ def login_if_needed(webdriver, args):
         return False
     user_click(webdriver, sign_in_button)
 
+    # Delay to allow for any 2FA or captcha.
+    logger.info("Waiting up to 120s for any 2FA or captcha...")
+    wait = WebDriverWait(webdriver, 2 * 60)
+    wait.until(EC.url_to_be(COUPON_URL))
+
     logger.info("Login flow complete!")
-    return get_elements_by_class_name(webdriver, "menu-nav__profile-button")
+    profile_name_element = get_element_by_xpath(webdriver, PROFILE_NAME_XPATH)
+    return (
+        is_visible(profile_name_element)
+        and profile_name_element.text.strip() != "Sign in"
+    )
 
 
 def maybe_prompt_for_safeway_credentials(args):
