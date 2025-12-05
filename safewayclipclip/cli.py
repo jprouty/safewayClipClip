@@ -110,7 +110,7 @@ def main():
     while coupons_clip_clip:
         try:
             user_click(webdriver, coupons_clip_clip[0])
-            logger.info("Clipped a coupon!")
+            # logger.info("Clipped a coupon!")
         except ElementClickInterceptedException:
             logger.exception("Click interception error; continuing")
         except StaleElementReferenceException:
@@ -118,7 +118,7 @@ def main():
         except JavascriptException:
             logger.exception("JS error; continuing")
 
-        time.sleep(1)
+        # time.sleep(1)
 
         close_modal_button = get_element_by_xpath(
             webdriver, '//*[@id="errorModal"]//button[contains(text(), "Close")]'
