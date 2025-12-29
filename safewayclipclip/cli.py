@@ -92,13 +92,22 @@ def main():
         return
 
     # Accept cookies bottom
-
-    # while True:
     coupons_clip_clip = get_elements_by_xpath(webdriver, COUPON_BUTTON_XPATH)
-    if not coupons_clip_clip:
-        logger.error("Cannot find coupons")
-        time.sleep(60)
-        return
+    while len(coupons_clip_clip) == 0:
+        load_more_button = get_element_by_xpath(
+            webdriver, '//button[contains(text(), "Load more")]'
+        )
+        if not load_more_button or not is_visible(load_more_button):
+            logger.warning(
+                'Cannot find "Load more" button OR any coupons to clip; either done or unexpectedly '
+                "missing"
+            )
+            time.sleep(60)
+            return
+        logger.info("Clicking load more!")
+        user_click(webdriver, load_more_button)
+        time.sleep(2)
+        coupons_clip_clip = get_elements_by_xpath(webdriver, COUPON_BUTTON_XPATH)
 
     accept_all_cookies = get_element_by_xpath(
         webdriver, '//button[contains(text(), "Accept All")]'
@@ -128,21 +137,23 @@ def main():
             logger.info("Closed modal dialog")
 
         # Sometimes clipped ones disappear and new ones come in.
-        # Othertimes you must explicitly click "load more".
-
-        load_more_button = get_element_by_xpath(
-            webdriver, '//button[contains(text(), "Load more")]'
-        )
-        if not load_more_button or not is_visible(load_more_button):
-            logger.warning(
-                'Cannot find "Load more" button; either done or unexpectedly ' "missing"
-            )
-            break
-        logger.info("Clicking load more!")
-        user_click(webdriver, load_more_button)
-        time.sleep(2)
-
         coupons_clip_clip = get_elements_by_xpath(webdriver, COUPON_BUTTON_XPATH)
+
+        # Othertimes you must explicitly click "load more".
+        if len(coupons_clip_clip) == 0:
+            load_more_button = get_element_by_xpath(
+                webdriver, '//button[contains(text(), "Load more")]'
+            )
+            if not load_more_button or not is_visible(load_more_button):
+                logger.warning(
+                    'Cannot find "Load more" button; either done or unexpectedly '
+                    "missing"
+                )
+                break
+            logger.info("Clicking load more!")
+            user_click(webdriver, load_more_button)
+            time.sleep(2)
+            coupons_clip_clip = get_elements_by_xpath(webdriver, COUPON_BUTTON_XPATH)
 
     logger.info("All done! Sleeping for 5m before exiting to allow for review")
     time.sleep(60 * 5)
