@@ -15,8 +15,8 @@ logger = logging.getLogger(__name__)
 
 def get_webdriver(headless=False, session_path=None):
     chrome_options = ChromeOptions()
-    # if session_path is not None:
-    #     chrome_options.add_argument("user-data-dir=" + session_path)
+    if session_path is not None:
+        chrome_options.add_argument(f"--user-data-dir={session_path}")
 
     webdriver = Chrome(options=chrome_options)
     # stealth(

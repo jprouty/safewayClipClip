@@ -127,18 +127,23 @@ def main():
             user_click(webdriver, close_modal_button)
             logger.info("Closed modal dialog")
 
+        # Sometimes clipped ones disappear and new ones come in.
+        # Othertimes you must explicitly click "load more".
+
+        load_more_button = get_element_by_xpath(
+            webdriver, '//button[contains(text(), "Load more")]'
+        )
+        if not load_more_button or not is_visible(load_more_button):
+            logger.warning(
+                'Cannot find "Load more" button; either done or unexpectedly ' "missing"
+            )
+            break
+        logger.info("Clicking load more!")
+        user_click(webdriver, load_more_button)
+        time.sleep(2)
+
         coupons_clip_clip = get_elements_by_xpath(webdriver, COUPON_BUTTON_XPATH)
 
-        # No need to load more - clipped ones disappear and new ones come in.
-        # load_mores = get_elements_by_class_name(webdriver, "load-more")
-        # if not load_mores or not is_visible(load_mores[0]):
-        #     logger.warning(
-        #         'Cannot find "Load more" button; either done or unexpectedly ' "missing"
-        #     )
-        #     break
-        # logger.info("Clicking load more!")
-        # user_click(load_mores[0])
-        # time.sleep(2)
     logger.info("All done! Sleeping for 5m before exiting to allow for review")
     time.sleep(60 * 5)
 

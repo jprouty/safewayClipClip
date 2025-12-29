@@ -9,7 +9,7 @@ def get_name_to_help_dict(parser):
 
 def define_common_args(parser):
     """Parseargs shared between both CLI & GUI programs."""
-    # Amazon creds:
+    # Safeway creds:
     parser.add_argument(
         "--safeway_username",
         default=None,
